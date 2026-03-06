@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MirrorChat — Clone Any Texting Style</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07070e;--s1:#0c0c17;--s2:#12122a;--s3:#1a1a38;--bd:#1f1f45;--bdh:#2e2e5a;--ac:#6366f1;--acg:rgba(99,102,241,.12);--ac2:#a5b4fc;--gn:#22c55e;--gng:rgba(34,197,94,.1);--or:#eab308;--org:rgba(234,179,8,.1);--rd:#ef4444;--rdg:rgba(239,68,68,.08);--t:#e2e2f0;--t2:#9898b4;--t3:#5c5c7a;--t4:#3c3c58;--w:#fff;--r:14px;--f:'DM Sans',sans-serif;--m:'IBM Plex Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--f);background:var(--bg);color:var(--t);min-height:100vh}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+input:focus{outline:none}a{color:var(--ac2);text-decoration:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes dot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slide{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.app{max-width:960px;margin:0 auto;padding:24px 28px 60px}
+.hdr{text-align:center;padding:44px 0 32px;position:relative}
+.hdr::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:500px;height:400px;background:radial-gradient(circle,rgba(99,102,241,.07) 0%,transparent 70%);pointer-events:none}
+.logo{font-size:40px;font-weight:800;letter-spacing:-.04em}.logo em{font-style:normal;background:linear-gradient(135deg,var(--ac),var(--ac2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tagl{font-size:13px;color:var(--t3);margin-top:6px}
+.steps{display:flex;justify-content:center;gap:3px;margin-bottom:36px}
+.stp{display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:9px;font-size:11px;font-weight:600;color:var(--t4)}
+.stp .n{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;border:2px solid var(--t4)}
+.stp.on{color:var(--ac2)}.stp.on .n{border-color:var(--ac);background:var(--acg);color:var(--ac2)}
+.stp.ok{color:var(--gn)}.stp.ok .n{border-color:var(--gn);background:var(--gng);color:var(--gn)}
+.sl{width:24px;height:2px;background:var(--t4);align-self:center}.sl.ok{background:var(--gn)}
+.crd{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:26px;margin-bottom:18px;animation:fadeUp .3s both}
+.ct{font-size:16px;font-weight:700;margin-bottom:3px}.cs{font-size:12px;color:var(--t2);margin-bottom:18px;line-height:1.5}
+.inp{width:100%;padding:10px 13px;background:var(--s2);border:1px solid var(--bd);border-radius:9px;color:var(--t);font-size:13px;font-family:var(--m)}.inp:focus{border-color:var(--ac)}
+.lbl{font-size:9px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px;display:block}
+.tabs{display:flex;gap:2px;background:var(--s2);border-radius:9px;padding:3px;margin-bottom:14px}
+.tab{flex:1;padding:8px;border-radius:7px;font-size:11px;font-weight:600;text-align:center;cursor:pointer;color:var(--t3);border:none;background:none;font-family:var(--f)}.tab.on{background:var(--ac);color:var(--w)}
+.dz{border:2px dashed var(--bd);border-radius:var(--r);padding:36px 24px;text-align:center;cursor:pointer;transition:.3s;margin-bottom:14px}.dz:hover{border-color:var(--ac)}.dz.ov{border-color:var(--ac);background:var(--acg)}.dz input{display:none}
+.dz-i{font-size:36px;margin-bottom:6px;display:block}.dz-t{font-size:13px;font-weight:600}.dz-s{font-size:10px;color:var(--t3);margin-top:4px}
+.fls{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
+.fl{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:9px;animation:slide .2s}
+.fl-i{flex:1;min-width:0}.fl-n{font-weight:600;font-size:12px}.fl-m{font-size:10px;color:var(--t2)}
+.fl-tg{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}.tg{padding:1px 7px;border-radius:4px;font-size:8px;font-weight:600;background:var(--s3);color:var(--t2)}
+.fl-x{background:none;border:none;color:var(--t4);cursor:pointer;font-size:14px;padding:4px}.fl-x:hover{color:var(--rd)}
+.dna-c{background:var(--s2);border:1px solid var(--bd);border-radius:11px;padding:16px;margin-bottom:8px;animation:slide .2s}
+.dna-nm{font-weight:700;font-size:14px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.dna-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.dna-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;margin-bottom:10px}
+.dna-s{background:var(--s3);border-radius:7px;padding:8px 10px}.dna-v{font-size:15px;font-weight:700;color:var(--ac2)}.dna-l{font-size:8px;color:var(--t3);margin-top:1px;text-transform:uppercase;letter-spacing:.4px}
+.dna-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px;margin:3px 0 6px}
+.dna-seg{border-radius:2px;height:100%}
+.dna-r{font-size:10px;color:var(--t2);padding:2px 0}
+.dna-emo{font-size:16px;letter-spacing:2px;margin:3px 0}
+.dna-q{display:inline-block;padding:1px 7px;border-radius:4px;font-size:9px;font-weight:600;margin:1px;background:var(--acg);color:var(--ac2)}
+.dna-sec{margin-top:8px}.dna-sec-t{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px}
+.mimic-btn{padding:8px 16px;border-radius:8px;background:var(--s2);color:var(--t);border:1px solid var(--bd);cursor:pointer;font-size:12px;font-weight:500;font-family:var(--f);transition:.15s;margin:3px}
+.mimic-btn.on{background:var(--ac);color:var(--w);border-color:var(--ac)}
+.pb{height:5px;background:var(--s3);border-radius:3px;overflow:hidden;margin:14px 0 5px}.pf{height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));border-radius:3px;transition:width .5s}
+.pt{font-size:10px;color:var(--t2);text-align:center}
+.log{background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:12px;font-family:var(--m);font-size:10px;color:var(--t2);max-height:200px;overflow-y:auto;margin-top:8px;line-height:1.8}
+.log .ok{color:var(--gn)}.log .er{color:var(--rd)}.log .in{color:var(--ac2)}
+.cht{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
+.ch-h{padding:12px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px}
+.ch-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.ch-nm{font-weight:600;font-size:13px}.ch-nm em{font-style:normal;color:var(--ac2)}.ch-mt{font-size:9px;color:var(--t2)}
+.ch-sw{margin-left:auto;display:flex;gap:3px}
+.ch-p{padding:4px 10px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--s2);color:var(--t3);font-family:var(--f)}.ch-p.on{background:var(--ac);color:var(--w);border-color:var(--ac)}
+.ms{height:380px;overflow-y:auto;padding:16px 18px}.ms-h{text-align:center;padding:36px 0;color:var(--t3);font-size:11px}
+.br{display:flex;margin-bottom:3px;animation:fadeUp .1s}.br.you{justify-content:flex-end}.br.them{justify-content:flex-start}
+.bb{max-width:72%;padding:8px 12px;font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.br.you .bb{background:var(--ac);color:var(--w);border-radius:12px 12px 3px 12px}
+.br.them .bb{background:var(--s2);color:var(--t);border-radius:12px 12px 12px 3px}
+.typ{display:flex;margin-bottom:5px}.td{padding:10px 14px;border-radius:12px 12px 12px 3px;background:var(--s2);display:flex;gap:3px;align-items:center}
+.tdot{width:5px;height:5px;border-radius:50%;background:var(--t3)}.tdot:nth-child(1){animation:dot 1.3s infinite}.tdot:nth-child(2){animation:dot 1.3s infinite .15s}.tdot:nth-child(3){animation:dot 1.3s infinite .3s}
+.ib{padding:12px 18px;border-top:1px solid var(--bd);display:flex;gap:7px}
+.mi{flex:1;padding:10px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:9px;color:var(--t);font-size:12px;font-family:var(--f)}.mi:focus{border-color:var(--ac)}.mi::placeholder{color:var(--t4)}
+.send{padding:10px 18px;background:var(--ac);color:var(--w);border:none;border-radius:9px;font-weight:600;font-size:11px;cursor:pointer;font-family:var(--f)}.send:disabled{opacity:.3;cursor:not-allowed}
+.btn{padding:10px 22px;border-radius:9px;font-weight:600;font-size:12px;cursor:pointer;font-family:var(--f);border:none;display:inline-flex;align-items:center;gap:5px}
+.btn-p{background:var(--ac);color:var(--w)}.btn-p:hover{background:var(--ac2)}.btn-p:disabled{opacity:.3;cursor:not-allowed}
+.btn-o{background:none;border:1px solid var(--bd);color:var(--t2)}
+.btn-g{background:var(--gng);border:1px solid rgba(34,197,94,.2);color:var(--gn);font-size:10px;padding:7px 14px}
+.btn-row{display:flex;gap:8px;justify-content:flex-end;align-items:center;flex-wrap:wrap}
+.warn{padding:8px 12px;border-radius:8px;font-size:10px;margin-bottom:12px}.warn-e{background:var(--rdg);border:1px solid rgba(239,68,68,.12);color:var(--rd)}.warn-s{background:var(--gng);border:1px solid rgba(34,197,94,.12);color:var(--gn)}
+.hidden{display:none!important}
+.promo-row{display:flex;gap:6px;margin-top:10px}
+.manual-row{display:flex;gap:6px;margin-top:12px;padding:10px;background:var(--s2);border-radius:8px}
+.manual-row input{flex:1}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr"><div class="logo">Mirror<em>Chat</em></div><div class="tagl">Upload chats → TextDNA fingerprint → Train AI clone → Chat as anyone</div></div>
+  <div class="steps" id="stepper"><div class="stp on"><div class="n">1</div>Setup</div><div class="sl"></div><div class="stp"><div class="n">2</div>Upload</div><div class="sl"></div><div class="stp"><div class="n">3</div>DNA</div><div class="sl"></div><div class="stp"><div class="n">4</div>Train</div><div class="sl"></div><div class="stp"><div class="n">5</div>Chat</div></div>
+  <div id="warn"></div>
+
+  <!-- STEP 1: SETUP -->
+  <div id="s1"><div class="crd">
+    <div class="ct">API Configuration</div>
+    <div class="cs">Choose how to power training. Use your own OpenAI key, or enter a promo code for free access.</div>
+    <div class="tabs"><button class="tab on" onclick="setApiTab('own')">My API Key</button><button class="tab" onclick="setApiTab('promo')">Promo Code</button></div>
+    <div id="ownBox"><label class="lbl">OpenAI API Key</label><input type="password" class="inp" id="apiKey" placeholder="sk-..."><div style="font-size:9px;color:var(--t3);margin-top:5px">Get one at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a></div></div>
+    <div id="promoBox" class="hidden"><label class="lbl">Promo / Discount Code</label><div class="promo-row"><input type="text" class="inp" id="promoCode" placeholder="Enter code..." style="flex:1;font-size:12px"><button class="btn btn-p" onclick="applyPromo()" style="font-size:10px;padding:8px 14px">Apply</button></div><div id="promoMsg" style="margin-top:6px;font-size:10px"></div></div>
+    <div class="btn-row" style="margin-top:18px"><button class="btn btn-p" onclick="goStep(2)">Next →</button></div>
+  </div></div>
+
+  <!-- STEP 2: UPLOAD -->
+  <div id="s2" class="hidden"><div class="crd">
+    <div class="ct">Upload WhatsApp Chats</div>
+    <div class="cs">Drop chat exports (.txt). We'll fingerprint every person's texting DNA.</div>
+    <div class="dz" id="dz"><input type="file" accept=".txt" multiple id="fi"><span class="dz-i">📱</span><span class="dz-t">Drop .txt files or click</span><span class="dz-s">Multiple files supported</span></div>
+    <div class="fls" id="files"></div>
+    <div class="btn-row"><button class="btn btn-o" onclick="goStep(1)">← Back</button><button class="btn btn-p" id="n2" disabled onclick="runAnalysis()">Analyze DNA →</button></div>
+  </div></div>
+
+  <!-- STEP 3: DNA -->
+  <div id="s3" class="hidden"><div class="crd">
+    <div class="ct">TextDNA Fingerprints</div><div class="cs" id="dnaSummary"></div>
+    <div id="dnaCards"></div>
+    <div class="ct" style="margin-top:16px">Who should the bot mimic?</div>
+    <div class="cs">Select people to clone. Bot learns each person's exact style.</div>
+    <div id="mimicBtns"></div>
+    <div id="pairInfo" style="margin-top:10px;font-size:10px;color:var(--t2)"></div>
+    <div class="btn-row" style="margin-top:18px"><button class="btn btn-o" onclick="goStep(2)">← Back</button><button class="btn btn-p" id="n3" disabled onclick="startTrain()">Start Training →</button></div>
+  </div></div>
+
+  <!-- STEP 4: TRAIN -->
+  <div id="s4" class="hidden"><div class="crd">
+    <div class="ct">Training Your Clone</div><div class="cs">Fine-tuning on OpenAI with TextDNA system prompts.</div>
+    <div class="pb"><div class="pf" id="pF" style="width:0%"></div></div><div class="pt" id="pT">Preparing...</div>
+    <div class="log" id="log"></div>
+    <div id="manualBox" class="hidden"><div class="manual-row"><input class="inp" id="manualModel" placeholder="Paste model ID: ft:gpt-4.1-nano-..." style="font-size:10px"><button class="btn btn-p" style="font-size:10px;padding:7px 12px" onclick="useManualModel()">Use</button></div></div>
+    <div class="btn-row" style="margin-top:14px"><button class="btn btn-p hidden" id="n4" onclick="goStep(5)">Start Chatting →</button></div>
+  </div></div>
+
+  <!-- STEP 5: CHAT -->
+  <div id="s5" class="hidden"><div class="cht">
+    <div class="ch-h"><div class="ch-av" id="cA"></div><div><div class="ch-nm">Bot is <em id="cO"></em></div><div class="ch-mt" id="cM"></div></div><div class="ch-sw" id="cSw"></div></div>
+    <div class="ms" id="ms"></div>
+    <div style="padding:4px 18px 0;font-size:9px;color:var(--t4)" id="chatHint">Enter = add message · Send = get reply</div>
+    <div class="ib"><input class="mi" id="mi" placeholder="Type..." disabled><button class="btn-o" style="padding:8px 12px;border-radius:8px;font-size:10px;cursor:pointer;font-family:var(--f);border:1px solid var(--bd);background:var(--s2);color:var(--t3)" id="addBtn" disabled onclick="addMsg()">+ Add</button><button class="send" id="sB" disabled onclick="sendBurst()">Send ➤</button></div>
+  </div></div>
+</div>
+
+<script>
+// ═══ STATE ═══
+const G = {step:1, apiMode:'own', token:null, rawFiles:[], dna:{}, pairs:[], allPeople:[],
+  mimicTargets:new Set(), model:null, jobId:null, cm:{}, co:null, typing:false, directions:{}};
+const COL=['#6366f1','#22c55e','#ef4444','#eab308','#8b5cf6','#06b6d4','#ec4899','#14b8a6'];
+const gc=i=>COL[i%COL.length], $=id=>document.getElementById(id), esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// ═══ API TAB ═══
+function setApiTab(t){G.apiMode=t;document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',i===(t==='own'?0:1)));$('ownBox').classList.toggle('hidden',t!=='own');$('promoBox').classList.toggle('hidden',t!=='promo');}
+
+async function applyPromo(){
+  const code=$('promoCode').value.trim();if(!code)return;
+  const r=await(await fetch('/api/validate-promo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})})).json();
+  $('promoMsg').innerHTML=r.valid?'<span class="warn-s" style="padding:4px 8px;border-radius:5px">'+r.message+'</span>':'<span class="warn-e" style="padding:4px 8px;border-radius:5px">'+r.message+'</span>';
+  if(r.valid)G.token=r.token;
+}
+
+// ═══ NAVIGATION ═══
+async function goStep(n){
+  // Validate step 1
+  if(n===2&&!G.token){
+    if(G.apiMode==='own'){
+      const key=$('apiKey').value.trim();
+      if(!key){showErr('Enter API key');return;}
+      const r=await(await fetch('/api/validate-key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})})).json();
+      if(!r.valid){showErr(r.message);return;}
+      G.token=r.token;
+    }else{
+      if(!G.token){showErr('Apply a promo code first');return;}
+    }
+  }
+  G.step=n;
+  document.querySelectorAll('.stp').forEach((s,i)=>{const sn=i+1;s.classList.remove('on','ok');if(sn<n)s.classList.add('ok');else if(sn===n)s.classList.add('on');});
+  document.querySelectorAll('.sl').forEach((l,i)=>l.classList.toggle('ok',i<n-1));
+  for(let i=1;i<=5;i++)$('s'+i).classList.toggle('hidden',i!==n);
+}
+function showErr(m){$('warn').innerHTML='<div class="warn warn-e">'+m+'</div>';setTimeout(()=>$('warn').innerHTML='',5000);}
+
+// ═══ UPLOAD ═══
+const dz=$('dz'),fi=$('fi');
+dz.onclick=()=>fi.click();dz.ondragover=e=>{e.preventDefault();dz.classList.add('ov');};dz.ondragleave=()=>dz.classList.remove('ov');
+dz.ondrop=e=>{e.preventDefault();dz.classList.remove('ov');addFiles(e.dataTransfer.files);};fi.onchange=e=>addFiles(e.target.files);
+
+function addFiles(fl){Array.from(fl).forEach(f=>{if(!f.name.endsWith('.txt'))return;if(G.rawFiles.find(x=>x.name===f.name))return;G.rawFiles.push(f);});renderFiles();}
+function renderFiles(){$('files').innerHTML=G.rawFiles.map((f,i)=>'<div class="fl"><div style="font-size:18px">📄</div><div class="fl-i"><div class="fl-n">'+f.name+'</div><div class="fl-m">'+(f.size/1024).toFixed(0)+' KB</div></div><button class="fl-x" data-i="'+i+'">✕</button></div>').join('');
+document.querySelectorAll('.fl-x').forEach(b=>b.onclick=()=>{G.rawFiles.splice(+b.dataset.i,1);renderFiles();});$('n2').disabled=!G.rawFiles.length;}
+
+// ═══ ANALYZE ═══
+async function runAnalysis(){
+  $('n2').disabled=true;$('n2').textContent='Analyzing...';
+  const fd=new FormData();G.rawFiles.forEach(f=>fd.append('files',f));
+  try{
+    const r=await(await fetch('/api/parse',{method:'POST',body:fd})).json();
+    if(r.error){showErr(r.error);$('n2').disabled=false;$('n2').textContent='Analyze DNA →';return;}
+    G.dna=r.dna;G.allPeople=r.people;G.pairs=r.pairs_data||[];G.directions=r.directions||{};
+    G.serverData={dna:r.dna,blocks:r.blocks,pairs_count:r.pairs,directions:r.directions};
+    goStep(3);renderDNA(r);
+  }catch(e){showErr('Parse error: '+e.message);}
+  $('n2').disabled=false;$('n2').textContent='Analyze DNA →';
+}
+
+function renderDNA(r){
+  $('dnaSummary').textContent=`${r.people.length} people analyzed · ${r.blocks} conversation blocks · ${r.pairs} training pairs`;
+  let html='';
+  r.people.forEach((name,idx)=>{
+    const d=r.dna[name];if(!d)return;
+    const ml=d.msg_length,rf=d.rapid_fire,emo=d.emoji,lang=d.language,punc=d.punctuation;
+    const topE=emo.top.map(e=>e.e).join(' ')||'none';
+    const quirksHtml=Object.entries(d.quirks||{}).map(([cat,items])=>items.length?'<div class="dna-sec-t">'+cat+'</div>'+items.map(([w,c])=>'<span class="dna-q">'+w+' ('+c+')</span>').join(''):'').filter(Boolean).join('');
+    const commonHtml=(d.common_msgs||[]).slice(0,6).map(p=>'<span class="dna-q">'+esc(p.m)+'</span>').join('');
+    const elongHtml=(d.elongation||[]).slice(0,5).map(e=>'<span class="dna-q">'+esc(e.w)+'</span>').join('');
+
+    html+=`<div class="dna-c"><div class="dna-nm"><div class="dna-av" style="background:${gc(idx)}20;color:${gc(idx)}">${name[0].toUpperCase()}</div>${name} <span style="font-size:10px;color:var(--t3);font-weight:400">${d.total} msgs</span></div>
+    <div class="dna-g">
+      <div class="dna-s"><div class="dna-v">${ml.avg_chars}</div><div class="dna-l">Avg chars</div></div>
+      <div class="dna-s"><div class="dna-v">${ml.avg_words}</div><div class="dna-l">Avg words</div></div>
+      <div class="dna-s"><div class="dna-v">${rf.avg_burst}</div><div class="dna-l">Msgs/burst</div></div>
+      <div class="dna-s"><div class="dna-v">${emo.usage_pct}%</div><div class="dna-l">Emoji rate</div></div>
+    </div>
+    <div class="dna-sec"><div class="dna-sec-t">Language</div>
+      <div class="dna-bar"><div class="dna-seg" style="width:${lang.english_pct}%;background:#6366f1"></div><div class="dna-seg" style="width:${lang.hinglish_pct}%;background:#eab308"></div><div class="dna-seg" style="width:${lang.hindi_pct}%;background:#22c55e"></div></div>
+      <div class="dna-r">EN ${lang.english_pct}% · Hinglish ${lang.hinglish_pct}% · HI ${lang.hindi_pct}%</div>
+    </div>
+    <div class="dna-sec"><div class="dna-sec-t">Top Emojis</div><div class="dna-emo">${topE}</div></div>
+    ${quirksHtml?'<div class="dna-sec">'+quirksHtml+'</div>':''}
+    ${commonHtml?'<div class="dna-sec"><div class="dna-sec-t">Common Messages</div>'+commonHtml+'</div>':''}
+    ${elongHtml?'<div class="dna-sec"><div class="dna-sec-t">Word Stretching</div>'+elongHtml+'</div>':''}
+    <div class="dna-sec"><div class="dna-r">Lowercase: ${punc.all_lower_pct}% · Exclaim: ${punc.exclaim_pct}% · Ellipsis: ${punc.ellipsis_pct}%</div></div>
+    </div>`;
+  });
+  $('dnaCards').innerHTML=html;
+
+  // Mimic buttons — select all by default
+  G.mimicTargets=new Set(r.people);
+  renderMimicBtns();
+}
+
+function renderMimicBtns(){
+  $('mimicBtns').innerHTML=G.allPeople.map(p=>'<button class="mimic-btn '+(G.mimicTargets.has(p)?'on':'')+'" onclick="toggleMimic(\''+p+'\')">'+p+'</button>').join('');
+  const cnt=Object.entries(G.directions).filter(([d])=>d.split('→')[1]&&G.mimicTargets.has(d.split('→')[1])).reduce((s,[,c])=>s+c,0);
+  $('pairInfo').textContent=cnt+' training pairs for selected targets';
+  $('n3').disabled=!G.mimicTargets.size;
+}
+function toggleMimic(p){G.mimicTargets.has(p)?G.mimicTargets.delete(p):G.mimicTargets.add(p);renderMimicBtns();}
+
+// ═══ TRAIN ═══
+async function startTrain(){
+  goStep(4);const log=$('log'),pF=$('pF'),pT=$('pT');
+  const addL=(m,c='')=>{log.innerHTML+='<div class="'+c+'">'+m+'</div>';log.scrollTop=log.scrollHeight;};
+  addL('Uploading & building training data...','in');pF.style.width='5%';
+
+  // Re-parse files for pairs (send to server)
+  const fd=new FormData();G.rawFiles.forEach(f=>fd.append('files',f));
+  let parseResult;
+  try{parseResult=await(await fetch('/api/parse',{method:'POST',body:fd})).json();}
+  catch(e){addL('Parse error: '+e.message,'er');return;}
+
+  // Now rebuild pairs server-side and train
+  addL('✓ Parsed '+parseResult.pairs+' pairs','ok');pF.style.width='10%';
+  addL('Starting OpenAI fine-tuning...','in');pT.textContent='Uploading to OpenAI...';pF.style.width='15%';
+
+  try{
+    const r=await(await fetch('/api/train',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:G.token,dna:parseResult.dna,pairs:parseResult.pairs_data||[],targets:[...G.mimicTargets]})})).json();
+    if(r.error){addL('✗ '+r.error,'er');pT.textContent='Error';$('manualBox').classList.remove('hidden');return;}
+    G.jobId=r.job_id;
+    addL('✓ Job started: '+r.job_id,'ok');addL('  '+r.train_count+' train + '+r.val_count+' validation','ok');
+    pF.style.width='30%';pT.textContent='Training... (15-45 min)';
+    addL('Polling for completion...','in');
+
+    // Poll
+    let lec=0;
+    while(true){
+      await new Promise(r=>setTimeout(r,15000));
+      try{
+        const s=await(await fetch('/api/train-status',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({token:G.token,job_id:G.jobId})})).json();
+        if(s.model){G.model=s.model;pF.style.width='100%';pT.textContent='✅ Complete!';addL('🎉 Model: '+s.model,'ok');$('n4').classList.remove('hidden');break;}
+        if(s.status==='failed'){addL('✗ Failed: '+(s.error||'Unknown'),'er');pT.textContent='Failed';$('manualBox').classList.remove('hidden');break;}
+        if(s.events&&s.events.length>lec){s.events.slice(lec).reverse().forEach(e=>addL('  '+e,'in'));lec=s.events.length;}
+        pF.style.width=Math.min(90,30+lec*5)+'%';pT.textContent='Training... ('+s.status+')';
+      }catch(e){addL('⚠ Poll error: '+e.message,'er');}
+    }
+  }catch(e){addL('✗ '+e.message,'er');pT.textContent='Error';$('manualBox').classList.remove('hidden');}
+}
+
+function useManualModel(){const m=$('manualModel').value.trim();if(m){G.model=m;$('pT').textContent='✅ Model set!';$('pF').style.width='100%';$('n4').classList.remove('hidden');}}
+
+// ═══ CHAT ═══
+// Multi-message: Enter = add msg to queue, Send = trigger bot reply
+let pendingMsgs = [];  // messages waiting to be sent as a burst
+
+function initChat(){
+  const people=[...G.mimicTargets];if(!people.length)return;
+  G.co=people[0];pendingMsgs=[];renderChat();
+}
+
+function renderChat(){
+  const people=[...G.mimicTargets],idx=people.indexOf(G.co),col=gc(idx);
+  $('cSw').innerHTML=people.map(n=>'<button class="ch-p '+(G.co===n?'on':'')+'" onclick="switchContact(\''+n+'\')">'+n+'</button>').join('');
+  $('cA').style.cssText='background:'+col+'20;color:'+col;$('cA').textContent=G.co[0].toUpperCase();
+  $('cO').textContent=G.co;$('cM').textContent='TextDNA-powered · replies as '+G.co;
+  const ms=G.cm[G.co]||[],ma=$('ms');
+
+  let html='';
+  if(!ms.length && !pendingMsgs.length) html='<div class="ms-h">Type messages like WhatsApp — Enter to add, Send to get reply</div>';
+  else{
+    // Render committed messages
+    html=ms.map(m=>'<div class="br '+m.s+'"><div class="bb">'+esc(m.text)+'</div></div>').join('');
+    // Render pending messages (queued but not sent yet) with dimmer style
+    if(pendingMsgs.length){
+      html+=pendingMsgs.map(t=>'<div class="br you"><div class="bb" style="opacity:.6">'+esc(t)+'</div></div>').join('');
+    }
+  }
+  if(G.typing) html+='<div class="typ"><div class="td"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div></div>';
+  ma.innerHTML=html;
+  ma.scrollTop=ma.scrollHeight;
+
+  $('mi').disabled=G.typing;
+  $('sB').disabled=G.typing||(!pendingMsgs.length && !$('mi').value.trim());
+  $('addBtn').disabled=G.typing;
+  $('mi').placeholder=pendingMsgs.length ? 'Add another message...' : 'Type to '+G.co+'...';
+  $('chatHint').textContent=pendingMsgs.length ? pendingMsgs.length+' message(s) queued · Send to get reply' : 'Enter = add message · Send = get reply';
+}
+
+function switchContact(n){G.co=n;pendingMsgs=[];renderChat();}
+
+function addMsg(){
+  const t=$('mi').value.trim();if(!t)return;
+  pendingMsgs.push(t);
+  $('mi').value='';
+  renderChat();
+  $('mi').focus();
+}
+
+async function sendBurst(){
+  // Add current input if any
+  const t=$('mi').value.trim();
+  if(t) pendingMsgs.push(t);
+  if(!pendingMsgs.length||!G.co||G.typing||!G.model)return;
+
+  if(!G.cm[G.co])G.cm[G.co]=[];
+
+  // Commit all pending messages as individual "you" bubbles
+  const burst = [...pendingMsgs];
+  burst.forEach(msg=>G.cm[G.co].push({s:'you',text:msg}));
+  pendingMsgs=[];
+  $('mi').value='';
+  G.typing=true;
+  renderChat();
+
+  // Build API messages — combine burst into one user turn (like WhatsApp rapid-fire)
+  const dna=G.dna[G.co];
+  const sys=dna?generatePromptJS(dna):'You are '+G.co+' on WhatsApp.';
+
+  // Build conversation history, combining consecutive same-role msgs
+  const allMsgs=G.cm[G.co]||[];
+  const history=[];
+  let i=0;
+  while(i<allMsgs.length){
+    const role=allMsgs[i].s==='you'?'user':'assistant';
+    const parts=[];
+    while(i<allMsgs.length && (allMsgs[i].s==='you'?'user':'assistant')===role){
+      parts.push(allMsgs[i].text);
+      i++;
+    }
+    history.push({role, content:parts.join('\n')});
+  }
+  // Keep last 10 turns
+  const recentHistory=history.slice(-10);
+
+  try{
+    const r=await(await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:G.token,model:G.model,messages:[{role:'system',content:sys},...recentHistory]})})).json();
+    if(r.error){showErr(r.error);G.typing=false;renderChat();return;}
+    let reply=(r.reply||'...').trim();
+    // Clean prefix like "Sampada:" if model adds it
+    const pre=G.co.toLowerCase()+':';
+    if(reply.toLowerCase().startsWith(pre))reply=reply.slice(pre.length).trim();
+    // Split multi-line replies into separate bubbles (rapid-fire style)
+    reply.split('\n').map(s=>s.trim()).filter(Boolean).forEach(x=>G.cm[G.co].push({s:'them',text:x}));
+  }catch(e){showErr(e.message);}
+  G.typing=false;renderChat();$('mi').focus();
+}
+
+// Override goStep(5) to init chat
+const origGo=goStep;
+goStep=async function(n){await origGo(n);if(n===5)initChat();};
+
+// Enter = add message, Shift+Enter or clicking Send = send burst
+$('mi').onkeydown=e=>{
+  if(e.key==='Enter'&&!e.shiftKey){
+    e.preventDefault();
+    addMsg();  // Enter just adds to queue
+  }
+};
+
+// Also update Send button state on input
+$('mi').oninput=()=>{
+  $('sB').disabled=G.typing||(!pendingMsgs.length && !$('mi').value.trim());
+};
+
+// System prompt generator (mirrors server — with thinking + reactions)
+function generatePromptJS(d){
+  const n=d.name,ml=d.msg_length,emo=d.emoji,lang=d.language,rf=d.rapid_fire,punc=d.punctuation;
+  const topE=emo.top.slice(0,8).map(e=>e.e).join(' ')||'none';
+  const quirks=Object.entries(d.quirks||{}).map(([c,items])=>items.length?c+': '+items.map(([w])=>'"'+w+'"').join(', '):'').filter(Boolean).join(' | ');
+  const common=(d.common_msgs||[]).slice(0,6).map(p=>'"'+p.m+'"').join(', ');
+
+  // Build reaction examples
+  let reactionText='';
+  if(d.reactions){
+    const entries=Object.entries(d.reactions).filter(([,v])=>v.samples&&v.samples.length);
+    if(entries.length){
+      reactionText='\n=== HOW YOU REACT ===\n';
+      entries.forEach(([key,data])=>{
+        const label=key.replace('to_','When someone sends ').replace('_',' ');
+        const samples=data.samples.slice(0,3).map(s=>'"'+s+'"').join(' | ');
+        reactionText+=`- ${label}: you reply like: ${samples}\n`;
+      });
+    }
+  }
+
+  const langD=lang.hinglish_pct>40?`Hinglish (~${lang.hinglish_pct}%)`:lang.english_pct>60?`mostly English`:
+    `EN ${lang.english_pct}% Hinglish ${lang.hinglish_pct}% HI ${lang.hindi_pct}%`;
+
+  return `You are ${n} texting on WhatsApp. You are a REAL person, not a bot.
+
+=== HOW TO THINK ===
+Before replying, understand WHAT was said:
+1. Greeting? Reply with YOUR greeting style.
+2. Question? Answer it in your way.
+3. News/info? React to THAT news.
+4. Emotional? Respond to the emotion.
+5. Casual? Keep it casual.
+6. Plans? Respond about the plans.
+ALWAYS reply to what was ACTUALLY said. Stay on topic.
+If multiple messages, read ALL and respond to combined context.
+
+=== YOUR STYLE ===
+- Language: ${langD}. ${punc.all_lower_pct>70?'All lowercase':'Normal caps'}.
+- Length: ~${ml.avg_chars} chars, ${ml.avg_words} words. ${ml.short_pct}% short.
+- ${rf.avg_burst>1.5?rf.avg_burst.toFixed(0)+' msgs in a row':'Single messages'}.
+- Emoji: ${emo.usage_pct}% rate. Top: ${topE}
+- Quirks: ${quirks}
+- Common replies: ${common}
+${reactionText}
+=== RULES ===
+1. THINK about what was said → reply in ${n}'s style. Context first, style second.
+2. ~${ml.avg_chars} chars. ${rf.avg_burst>1.5?'Multiple short msgs (\\n separated)':'Single messages'}.
+3. Match EXACT vocabulary. ${n}'s words only.
+4. ${emo.usage_pct>15?'Use emojis: '+topE:'Barely use emojis'}.
+5. If someone says "hi", just say hi back. Don't dump random info.
+6. Stay on topic. Never switch randomly.`;
+}
+</script>
+</body>
+</html>
